@@ -3,10 +3,19 @@ exports.init = function (data) {
 //alerte météo
 setTimeout(function(){
 try{
+  var request = require('request');var cheerio = require('cheerio');
   var fsa = require('fs');
   var requeststart = require('request');
 var path = require('path');
 var exec = require('child_process').exec;
+   
+request({ 'uri' : 'https://meteo.orange.fr/vigilance-france/', 'headers':{'Accept-Charset': 'windows-1252'},'encoding':'binary'  }, function(error, response, html){
+
+       var $ = cheerio.load(html);
+       console.log(" image "+$('.meteo-map').find('img').attr('src'))
+
+
+
     var download = function(uri, filename, callback){
                 requeststart.head(uri, function(err, res, body){    
                     requeststart(uri).pipe(fsa.createWriteStream(filename)).on('close', callback);
@@ -16,10 +25,14 @@ var exec = require('child_process').exec;
   var sauvfilePath = path.resolve('%CD%', './script/static/icones/alertemeteo').replace('\\%CD%', '');
   var deatefinal = new Date().getTime()
 
-      download('https://media3.woopic.com/api/v1/images/571%2Fvigilance-fr%2Ff62%2Fa1b%2F62dc188e28f3a05aa0e0794f99%2Fvigilance-600-fr.png?facedetect=1&quality=85', sauvfilePath+'/google'+deatefinal +".png", function(){
+      download('https:'+$('.meteo-map').find('img').attr('src'), sauvfilePath+'/google'+deatefinal +".png", function(){
           console.log('done lecture image alerte météo ');
           JarvisIAIcones('Imgalerte','icones/alertemeteo/google'+deatefinal +".png")
       });
+})
+
+
+
       var path = require('path');
     var nircmd =JarvisIANircmd
   var dir = path.resolve('%CD%', './script/').replace('\\%CD%', '');
@@ -53,11 +66,19 @@ var download = function(uri, filename, callback){
 };
 var sauvfilePath = path.resolve('%CD%', './script/static/icones/alertemeteo').replace('\\%CD%', '');
 var deatefinal = new Date().getTime()
-download('https://media3.woopic.com/api/v1/images/571%2Fvigilance-fr%2Ff62%2Fa1b%2F62dc188e28f3a05aa0e0794f99%2Fvigilance-600-fr.png?facedetect=1&quality=85', sauvfilePath+'/google'+deatefinal +".png", function(){
+ var request = require('request');var cheerio = require('cheerio');
+request({ 'uri' : 'https://meteo.orange.fr/vigilance-france/', 'headers':{'Accept-Charset': 'windows-1252'},'encoding':'binary'  }, function(error, response, html){
+
+       var $ = cheerio.load(html);
+       console.log(" image "+$('.meteo-map').find('img').attr('src'))
+
+download('https:'+$('.meteo-map').find('img').attr('src'), sauvfilePath+'/google'+deatefinal +".png", function(){
   console.log('done alerte météo interval ');
  JarvisIAIcones('Imgalerte','icones/alertemeteo/google'+deatefinal +".png")
 
 });
+
+})
 }, 1000*30);//fin timeout
  }
     catch(err){console.log(err,'       error')}
